@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="jdbcTypeForNull" value="NULL" />
+        <!-- resultType이 Map인 경우 컬럼 값이 NULL일때도 컬럼 가져오기 -->
+        <setting name="callSettersOnNulls" value="true" />
+        <!-- snake_case → camelCase 자동 변환 -->
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        <!-- SQL 로그 (개발 시 STDOUT_LOGGING, 운영 시 NO_LOGGING) -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+    </settings>
+
+    <typeAliases>
+        <typeAlias alias="map" type="java.util.Map" />
+    </typeAliases>
+</configuration>

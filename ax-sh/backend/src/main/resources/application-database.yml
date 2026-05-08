@@ -1,0 +1,12 @@
+# Multi Database
+# MySQL (Primary DB)
+datasource:
+  mysql:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: ${MYSQL_JDBC_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    maximum-pool-size: 10
+    minimum-idle: 1
+    idle-timeout: 300000
+    connection-timeout: 30000
