@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.farmzonesnc.axtoy.auth.mapper.AuthMapper">
+
+    <select id="countByEmail" resultType="int">
+        SELECT COUNT(*)
+        FROM sh_members
+        WHERE email = #{email}
+    </select>
+
+    <select id="findByEmail" resultType="com.farmzonesnc.axtoy.auth.domain.Member">
+        SELECT
+            id,
+            email,
+            password,
+            nickname,
+            created_at,
+            updated_at
+        FROM members
+        WHERE email = #{email}
+    </select>
+
+    <insert id="insertMember"
+            parameterType="com.farmzonesnc.axtoy.auth.domain.Member"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO sh_members (
+            email,
+            password,
+            nickname
+        ) VALUES (
+            #{email},
+            #{password},
+            #{nickname}
+        )
+    </insert>
+
+</mapper>
