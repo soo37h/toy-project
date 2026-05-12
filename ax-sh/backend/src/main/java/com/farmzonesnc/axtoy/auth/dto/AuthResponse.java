@@ -10,7 +10,7 @@ public record AuthResponse(
     String accessToken
 ) {
 	/*
-	 * 회원강비 성공 또는 로그인 성공 시 크라이언트에게 내려주는 응답 DTO
+	 * 회원가입 성공 또는 로그인 성공 시 클라이언트에게 내려주는 응답 DTO
 	 * 응답 예시
 	 * {
 		  "memberId": 1,
@@ -26,7 +26,7 @@ public record AuthResponse(
             member.getId(),
             member.getEmail(),
             member.getNickname(),
-            "Bearer", // AuthResponse.from(member, accessToken); 로 변경
+            "Bearer",
             accessToken
         );
     }
