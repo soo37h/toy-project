@@ -37,8 +37,12 @@ app:
   domain:
     web-url: http://localhost:3000
     api-url: http://localhost:8081
+  jwt:
+    secret: ${JWT_SECRET:local-jwt-secret-key-for-dev-env-1234567890}
+    access-token-expiration-millis: 3600000
   cors:
     allowed-origins: http://localhost:3000,http://localhost:3001,http://localhost:5173
+
 
 # Health Check & Metrics
 management:

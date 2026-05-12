@@ -5,6 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record SignupRequest(
+	/*
+	 * 회원가입 요청으로 들어오는 JSON 데이터를 받는 DTO
+	 * 프론트에서 JSON을 보내면, Spring이 자동으로 SignupRequest에 담아준다.
+	 * 검증 @Valid 
+	 */
 
     @NotBlank(message = "이메일은 필수입니다.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
