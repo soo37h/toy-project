@@ -1,31 +1,27 @@
 package com.farmzonesnc.axtoy.auth.dto;
 
-import com.farmzonesnc.axtoy.auth.domain.Member;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.farmzonesnc.axtoy.auth.domain.User;
 
 public record AuthResponse(
-    Long memberId,
+    @JsonProperty("user_id") Long userId,
     String email,
-    String nickname,
+    String name,
+    @JsonProperty("dept_name") String deptName,
     String tokenType,
     String accessToken
 ) {
 	/*
 	 * 회원가입 성공 또는 로그인 성공 시 클라이언트에게 내려주는 응답 DTO
-	 * 응답 예시
-	 * {
-		  "memberId": 1,
-		  "email": "test@test.com",
-		  "nickname": "테스터",
-		  "tokenType": "Bearer",
-		  "accessToken": "eyJhbGciOiJIUzI1NiJ9..."
-		}
 	 */
 
-    public static AuthResponse from(Member member, String accessToken) {
+    public static AuthResponse from(User user, String accessToken) {
         return new AuthResponse(
-            member.getId(),
-            member.getEmail(),
-            member.getNickname(),
+            user.getId(),
+            user.getEmail(),
+            user.getName(),
+            user.getDeptName(),
             "Bearer",
             accessToken
         );

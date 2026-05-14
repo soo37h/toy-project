@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.farmzonesnc.axtoy.auth.domain.Member;
+import com.farmzonesnc.axtoy.auth.domain.User;
 import com.farmzonesnc.axtoy.auth.dto.AuthResponse;
 import com.farmzonesnc.axtoy.auth.dto.LoginRequest;
 import com.farmzonesnc.axtoy.auth.dto.SignupRequest;
@@ -35,23 +35,24 @@ public class AuthService {
             );
         }
 
-        Member member = Member.builder()
+        User user = User.builder()
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .nickname(request.nickname())
+                .name(request.name())
+                .deptName(request.deptName())
                 .build();
 
-        authMapper.insertMember(member);
+        authMapper.insertUser(user);
 
-        String accessToken = jwtProvider.createAccessToken(member);
+        String accessToken = jwtProvider.createAccessToken(user);
 
-        return AuthResponse.from(member, accessToken);
+        return AuthResponse.from(user, accessToken);
     }
 
     public AuthResponse login(LoginRequest request) {
-        Member member = authMapper.findByEmail(request.email());
+        User user = authMapper.findByEmail(request.email());
 
-        if (member == null) {
+        if (user == null) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "이메일 또는 비밀번호가 올바르지 않습니다."
@@ -60,7 +61,7 @@ public class AuthService {
 
         boolean isPasswordMatched = passwordEncoder.matches(
                 request.password(),
-                member.getPassword()
+                user.getPassword()
         );
 
         if (!isPasswordMatched) {
@@ -70,8 +71,8 @@ public class AuthService {
             );
         }
 
-        String accessToken = jwtProvider.createAccessToken(member);
+        String accessToken = jwtProvider.createAccessToken(user);
 
-        return AuthResponse.from(member, accessToken);
+        return AuthResponse.from(user, accessToken);
     }
 }

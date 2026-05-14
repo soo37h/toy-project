@@ -8,7 +8,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.farmzonesnc.axtoy.auth.domain.Member;
+import com.farmzonesnc.axtoy.auth.domain.User;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -18,14 +18,6 @@ public class JwtProvider {
 	/*
 	 * JWT 토큰을 생성하는 클래스
 	 * 로그인 또는 회원가입 성공 후 JWT 문자열을 만든다.
-	 * JWT 정보
-	 *  | 항목         | 값       |
-		| ---------- | ------   |
-		| subject    | 회원 id   |
-		| email      | 회원 이메일 |
-		| nickname   | 회원 닉네임 |
-		| issuedAt   | 발급 시간  |
-		| expiration | 만료 시간  |
 		
 	 * TODO
 	 * 요청 헤더의 JWT 검증
@@ -44,14 +36,14 @@ public class JwtProvider {
         this.accessTokenExpirationMillis = accessTokenExpirationMillis;
     }
 
-    public String createAccessToken(Member member) {
+    public String createAccessToken(User user) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + accessTokenExpirationMillis);
 
         return Jwts.builder()
-                .subject(String.valueOf(member.getId()))
-                .claim("email", member.getEmail())
-                .claim("nickname", member.getNickname())
+                .subject(String.valueOf(user.getId()))
+                .claim("email", user.getEmail())
+                .claim("name", user.getName())
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(secretKey, Jwts.SIG.HS256)

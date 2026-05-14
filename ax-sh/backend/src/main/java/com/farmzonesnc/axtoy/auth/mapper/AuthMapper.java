@@ -3,7 +3,7 @@ package com.farmzonesnc.axtoy.auth.mapper;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.farmzonesnc.axtoy.app.database.MySQL;
-import com.farmzonesnc.axtoy.auth.domain.Member;
+import com.farmzonesnc.axtoy.auth.domain.User;
 
 @Mapper
 @MySQL
@@ -15,7 +15,7 @@ public interface AuthMapper {
 
     int countByEmail(String email);
 
-    Member findByEmail(String email);
+    User findByEmail(String email);
 
-    int insertMember(Member member);
+    int insertUser(User user);
 }

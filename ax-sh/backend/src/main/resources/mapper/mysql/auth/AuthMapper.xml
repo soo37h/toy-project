@@ -3,42 +3,49 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- com.farmzonesnc.axtoy.auth.mapper.AuthMapper 인터페이스 연결 --> 
+<!-- com.farmzonesnc.axtoy.auth.mapper.AuthMapper 인터페이스 연결 -->
 <mapper namespace="com.farmzonesnc.axtoy.auth.mapper.AuthMapper">
 
-	<!-- 이메일 중복 확인 -->
+    <!-- 이메일 중복 확인 -->
     <select id="countByEmail" resultType="int">
         SELECT COUNT(*)
-        FROM sh_members
+        FROM sh_users
         WHERE email = #{email}
     </select>
 
-	<!-- 로그인시 이메일로 회원 찾는 SQL -->
-    <select id="findByEmail" resultType="com.farmzonesnc.axtoy.auth.domain.Member">
+    <!-- 로그인 시 이메일로 회원 조회 -->
+    <select id="findByEmail" resultType="com.farmzonesnc.axtoy.auth.domain.User">
         SELECT
             id,
             email,
             password,
-            nickname,
+            name,
+            dept_name,
             created_at,
             updated_at
-        FROM sh_members
+        FROM sh_users
         WHERE email = #{email}
     </select>
 
-	<!-- 회원가입할 때 DB에 저장하는 SQL -->
-    <insert id="insertMember"
-            parameterType="com.farmzonesnc.axtoy.auth.domain.Member"
-            useGeneratedKeys="true" 
+    <!-- 회원가입 -->
+    <insert id="insertUser"
+            parameterType="com.farmzonesnc.axtoy.auth.domain.User"
+            useGeneratedKeys="true"
             keyProperty="id">
-        INSERT INTO sh_members (
+        INSERT INTO sh_users (
             email,
             password,
-            nickname
+            name,
+            dept_name,
+            created_at,
+            updated_at
         ) VALUES (
             #{email},
             #{password},
-            #{nickname}
+            #{name},
+            #{deptName},
+            NOW(),
+            NOW()
         )
     </insert>
 
