@@ -1,42 +1,33 @@
 package com.farmzonesnc.axtoy.app.exception;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-public record ErrorResponse(
-        LocalDateTime timestamp,
-        int status,
-        String code,
-        String message,
-        List<FieldErrorResponse> errors
-) {
+import lombok.Getter;
 
-    public static ErrorResponse of(
-            int status,
-            String code,
-            String message,
-            List<FieldErrorResponse> errors
-    ) {
-        return new ErrorResponse(
-                LocalDateTime.now(),
-                status,
-                code,
-                message,
-                errors
-        );
-    }
+/**
+ * errors 객체 정의
+ */
 
-    public static ErrorResponse of(
-            int status,
-            String code,
-            String message
-    ) {
-        return new ErrorResponse(
-                LocalDateTime.now(),
-                status,
-                code,
-                message,
-                List.of()
-        );
-    }
+@Getter
+@JsonInclude(JsonInclude.Include.ALWAYS)
+public class ErrorResponse {
+	private final int code;
+	private final String status;
+	private final String message;
+	
+	private ErrorResponse(int code, String status, String message) {
+		this.code = code;
+		this.status = status;
+		this.message = message;
+	}
+	
+	public static ErrorResponse of(HttpStatus status, String message) {
+		return new ErrorResponse(
+			status.value(),
+			status.name(),
+			message
+		);
+	}
+	
 }

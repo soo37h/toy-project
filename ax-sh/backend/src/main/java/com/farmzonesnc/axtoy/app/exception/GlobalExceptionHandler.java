@@ -1,94 +1,59 @@
 package com.farmzonesnc.axtoy.app.exception;
 
-import java.util.List;
-
+import com.farmzonesnc.axtoy.app.dto.ApiResponse;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
+
+/**
+ * @RestControllerAdvice 전역 예외 처리. 모든 Controller에서 발생한 예외를 이 클래스에서 공통으로 처리
+ */
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * DTO 검증 실패 처리
-     *
-     * 예:
-     * - @NotBlank 실패
-     * - @Email 실패
-     * - @Size 실패
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(
-            MethodArgumentNotValidException exception
-    ) {
-        List<FieldErrorResponse> errors = exception.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(this::toFieldErrorResponse)
-                .toList();
+	// @Valid 검증 실패 처리
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ApiResponse<Object>> handleValidationException(MethodArgumentNotValidException e) {
+		// 첫 번째 에러 메시지 하나만 추출
+		String message = e.getBindingResult()
+				.getFieldErrors()
+				.stream()
+				.findFirst()
+				.map(DefaultMessageSourceResolvable::getDefaultMessage)
+				.orElse("요청 값이 올바르지 않습니다.");
 
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.BAD_REQUEST.value(),
-                "VALIDATION_ERROR",
-                "요청값이 올바르지 않습니다.",
-                errors
-        );
+		return fail(HttpStatus.BAD_REQUEST, message);
+	}
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
+	// JSON 형식 오류 처리
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadableException(
+			HttpMessageNotReadableException e) {
 
-    /**
-     * ResponseStatusException 처리
-     *
-     * 예:
-     * - 이메일 중복 409
-     * - 로그인 실패 401
-     */
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponse> handleResponseStatusException(
-            ResponseStatusException exception
-    ) {
-        int status = exception.getStatusCode().value();
+		return fail(HttpStatus.BAD_REQUEST, "요청 형식이 올바르지 않습니다.");
+	}
 
-        ErrorResponse response = ErrorResponse.of(
-                status,
-                "BUSINESS_ERROR",
-                exception.getReason()
-        );
+	// 직접 발생시키는 비즈니스 예외 처리
+	@ExceptionHandler(BusinessException.class)
+	public ResponseEntity<ApiResponse<Object>> handleBusinessException(BusinessException e) {
+		return fail(e.getStatus(), e.getMessage());
+	}
 
-        return ResponseEntity
-                .status(exception.getStatusCode())
-                .body(response);
-    }
+	// 기타 서버 오류 처리
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ApiResponse<Object>> handleException(Exception e) {
+		return fail(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
+	}
 
-    /**
-     * 그 외 예상하지 못한 서버 에러 처리
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(
-            Exception exception
-    ) {
-        ErrorResponse response = ErrorResponse.of(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "INTERNAL_SERVER_ERROR",
-                "서버 내부 오류가 발생했습니다."
-        );
+	// 실패 응답 만드는 메서드
+	private ResponseEntity<ApiResponse<Object>> fail(HttpStatus status, String message) {
+		ErrorResponse errorResponse = ErrorResponse.of(status, message);
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(response);
-    }
-
-    private FieldErrorResponse toFieldErrorResponse(FieldError fieldError) {
-        return FieldErrorResponse.of(
-                fieldError.getField(),
-                fieldError.getDefaultMessage()
-        );
-    }
+		return ResponseEntity.status(status).body(ApiResponse.fail(errorResponse));
+	}
 }
