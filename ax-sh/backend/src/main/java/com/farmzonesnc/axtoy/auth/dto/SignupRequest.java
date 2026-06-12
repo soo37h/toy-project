@@ -28,11 +28,7 @@ public record SignupRequest(
 
     @NotBlank(message = "이름은 필수입니다.")
     @Size(max = 50, message = "이름은 50자 이하여야 합니다.")
-    String name,
+    String name
 
-    @NotBlank(message = "부서명은 필수입니다.")
-    @Size(max = 100, message = "부서명은 100자 이하여야 합니다.")
-    @JsonProperty("dept_name")
-    String deptName
 ) {
 }

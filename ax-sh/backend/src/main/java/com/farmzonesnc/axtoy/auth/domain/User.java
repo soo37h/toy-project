@@ -27,8 +27,6 @@ public class User {
 
     private String name;
 
-    private String deptName;
-
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

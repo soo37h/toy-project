@@ -12,21 +12,7 @@
         FROM sh_users
         WHERE email = #{email}
     </select>
-
-    <!-- 로그인 시 이메일로 회원 조회 -->
-    <select id="findByEmail" resultType="com.farmzonesnc.axtoy.auth.domain.User">
-        SELECT
-            id,
-            email,
-            password,
-            name,
-            dept_name,
-            created_at,
-            updated_at
-        FROM sh_users
-        WHERE email = #{email}
-    </select>
-
+    
     <!-- 회원가입 -->
     <insert id="insertUser"
             parameterType="com.farmzonesnc.axtoy.auth.domain.User"
@@ -36,17 +22,28 @@
             email,
             password,
             name,
-            dept_name,
             created_at,
             updated_at
         ) VALUES (
             #{email},
             #{password},
             #{name},
-            #{deptName},
             NOW(),
             NOW()
         )
     </insert>
+    
+    <!-- 로그인 시 이메일로 회원 조회 -->
+    <select id="findByEmail" resultType="com.farmzonesnc.axtoy.auth.domain.User">
+        SELECT
+            id,
+            email,
+            password,
+            name,
+            created_at,
+            updated_at
+        FROM sh_users
+        WHERE email = #{email}
+    </select>
 
 </mapper>

@@ -4,10 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.farmzonesnc.axtoy.app.exception.BusinessException;
 import com.farmzonesnc.axtoy.auth.domain.User;
 import com.farmzonesnc.axtoy.auth.dto.AuthResponse;
+import com.farmzonesnc.axtoy.auth.dto.EmailIdCheckResponse;
 import com.farmzonesnc.axtoy.auth.dto.LoginRequest;
 import com.farmzonesnc.axtoy.auth.dto.SignupRequest;
 import com.farmzonesnc.axtoy.auth.jwt.JwtProvider;
@@ -24,12 +25,22 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
+    public EmailIdCheckResponse checkEmailId(String email) {
+        int emailCount = authMapper.countByEmail(email);
+
+        if (emailCount > 0) {
+            return EmailIdCheckResponse.duplicated(email);
+        }
+
+        return EmailIdCheckResponse.available(email);
+    }
+
     @Transactional
     public AuthResponse signup(SignupRequest request) {
         int emailCount = authMapper.countByEmail(request.email());
 
         if (emailCount > 0) {
-            throw new ResponseStatusException(
+            throw new BusinessException(
                     HttpStatus.CONFLICT,
                     "이미 사용 중인 이메일입니다."
             );
@@ -39,7 +50,6 @@ public class AuthService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .name(request.name())
-                .deptName(request.deptName())
                 .build();
 
         authMapper.insertUser(user);
@@ -53,7 +63,7 @@ public class AuthService {
         User user = authMapper.findByEmail(request.email());
 
         if (user == null) {
-            throw new ResponseStatusException(
+            throw new BusinessException(
                     HttpStatus.UNAUTHORIZED,
                     "이메일 또는 비밀번호가 올바르지 않습니다."
             );
@@ -65,7 +75,7 @@ public class AuthService {
         );
 
         if (!isPasswordMatched) {
-            throw new ResponseStatusException(
+            throw new BusinessException(
                     HttpStatus.UNAUTHORIZED,
                     "이메일 또는 비밀번호가 올바르지 않습니다."
             );
